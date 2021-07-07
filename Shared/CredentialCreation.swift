@@ -3,7 +3,7 @@
 //  Shiny
 //
 //  Created by Frederic Jahn on 15.06.21.
-//  Copyright © 2021 Apple. All rights reserved.
+//  Copyright © 2021 Hanko. All rights reserved.
 //
 
 import Foundation
