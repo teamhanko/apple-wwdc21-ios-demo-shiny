@@ -23,7 +23,7 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
         let publicKeyCredentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: domain)
 
         // TODO:
-        // Fetch the challenge the server. The challengs should be unique for every request.
+        // Fetch the challenge [from] the server. The challeng[e] should be unique for every request.
 //        let challenge = Data()
         getAuthenticationOptions() { assertionRequestOptions in
             let challenge = assertionRequestOptions.publicKey.challenge.decodeBase64Url()!

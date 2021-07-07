@@ -43,6 +43,12 @@ class SignInViewController: UIViewController {
         (UIApplication.shared.delegate as? AppDelegate)?.accountManager.signUpWith(userName: userName, anchor: window)
     }
 
+    @IBAction func signIn(_ sender: UIButton) {
+        self.showSpinner()
+        guard let window = self.view.window else { fatalError("The view was not in the app's view hierarchy!") }
+        (UIApplication.shared.delegate as? AppDelegate)?.accountManager.signInWith(anchor: window)
+    }
+
     func didFinishSignIn() {
         self.view.window?.rootViewController = UIStoryboard(name: "Main", bundle: nil)
             .instantiateViewController(withIdentifier: "UserHomeViewController")

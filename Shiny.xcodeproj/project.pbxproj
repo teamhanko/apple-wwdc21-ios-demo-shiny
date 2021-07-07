@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2443F12C2692EAFB00EC1C3D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 2443F12B2692EAFB00EC1C3D /* Alamofire */; };
 		2443F12E2692EB4200EC1C3D /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2443F12D2692EB4200EC1C3D /* Models.swift */; };
+		3DADA6C12695DD4E00A4B068 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DADA6C02695DD4E00A4B068 /* Util.swift */; };
 		E09D56EF2669A5F2004A809B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09D56EE2669A5F2004A809B /* AppDelegate.swift */; };
 		E09D56F12669A5F2004A809B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09D56F02669A5F2004A809B /* SceneDelegate.swift */; };
 		E09D56F62669A5F2004A809B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E09D56F42669A5F2004A809B /* Main.storyboard */; };
@@ -21,6 +22,7 @@
 
 /* Begin PBXFileReference section */
 		2443F12D2692EB4200EC1C3D /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		3DADA6C02695DD4E00A4B068 /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 		D0EE5C66F4ACE15F993A4F03 /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
 		E09D56EB2669A5F2004A809B /* Shiny.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Shiny.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E09D56EE2669A5F2004A809B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -90,6 +92,7 @@
 				E09D56F72669A5F5004A809B /* Assets.xcassets */,
 				E09D56FC2669A5F5004A809B /* Info.plist */,
 				2443F12D2692EB4200EC1C3D /* Models.swift */,
+				3DADA6C02695DD4E00A4B068 /* Util.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -183,6 +186,7 @@
 				E0C944D32669A7DF0033265C /* SignInViewController.swift in Sources */,
 				E09D56EF2669A5F2004A809B /* AppDelegate.swift in Sources */,
 				2443F12E2692EB4200EC1C3D /* Models.swift in Sources */,
+				3DADA6C12695DD4E00A4B068 /* Util.swift in Sources */,
 				E0C944D72669A8840033265C /* UserHomeViewController.swift in Sources */,
 				E09D56F12669A5F2004A809B /* SceneDelegate.swift in Sources */,
 			);
