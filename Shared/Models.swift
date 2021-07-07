@@ -3,7 +3,7 @@
 //  Shiny
 //
 //  Created by Frederic Jahn on 05.07.21.
-//  Copyright © 2021 Apple. All rights reserved.
+//  Copyright © 2021 Hanko. All rights reserved.
 //
 
 import Foundation
@@ -22,16 +22,13 @@ class CredentialCreationPublicKey : Codable {
 
 class CredentialCreationUser : Codable {
     var id: String
-    var username: String
+    var name: String
     var displayName: String
 }
 
-
 class CredentialCreationAuthenticatorSelection : Codable {
-    var userVerification: String
+    var userVerification: String?
 }
-
-
 
 class CredentialAssertion : Codable {
     var publicKey: CredentialAssertionPublicKey
