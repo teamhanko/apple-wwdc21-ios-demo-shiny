@@ -15,25 +15,24 @@ extension NSNotification.Name {
 }
 
 class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProviding, ASAuthorizationControllerDelegate {
-    let domain = "wwdc21.dev.hanko.io"
+    let domain = "" // TODO: insert your domain name here
     var authenticationAnchor: ASPresentationAnchor?
 
     func signInWith(anchor: ASPresentationAnchor) {
         self.authenticationAnchor = anchor
         let publicKeyCredentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: domain)
 
-        // TODO:
-        // Fetch the challenge [from] the server. The challeng[e] should be unique for every request.
-//        let challenge = Data()
+        // Fetch the challenge from our webapp the server. It is unique for every request.
         getAuthenticationOptions() { assertionRequestOptions in
             let challenge = assertionRequestOptions.publicKey.challenge.decodeBase64Url()!
             let assertionRequest = publicKeyCredentialProvider.createCredentialAssertionRequest(challenge: challenge)
             
+            // Check if the webapp requires user verification (see https://docs.hanko.io/guides/userverification)
             if let userVerification = assertionRequestOptions.publicKey.userVerification {
                 assertionRequest.userVerificationPreference = ASAuthorizationPublicKeyCredentialUserVerificationPreference.init(rawValue: userVerification)
             }
 
-            // Pass in any mix of supported sign in request types.
+            // you can pass in any mix of supported sign in request types here - we only use Passkeys
             let authController = ASAuthorizationController(authorizationRequests: [ assertionRequest ] )
             authController.delegate = self
             authController.presentationContextProvider = self
@@ -45,27 +44,22 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
         self.authenticationAnchor = anchor
         let publicKeyCredentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: domain)
 
-        // TODO:
-        // Fetch the challenge the server. The challengs should be unique for every request.
-        // The userID is the identifier for the user's account.
-//        let challenge = Data()
-//        let userID = Data(UUID().uuidString.utf8)
-
+        // Fetch the challenge from our webapp. The challenge is unique for every request.
         getRegistrationOptions(username: userName) { creationRequest in
             let challenge = creationRequest.publicKey.challenge.decodeBase64Url()!
             let userID = creationRequest.publicKey.user.id.decodeBase64Url()!
             let registrationRequest = publicKeyCredentialProvider.createCredentialRegistrationRequest(challenge: challenge,
                                                                                                       name: userName, userID: userID)
+            // Check if the webapp requires attestation (see https://docs.hanko.io/guides/attestation)
             if let attestation = creationRequest.publicKey.attestation {
                 registrationRequest.attestationPreference = ASAuthorizationPublicKeyCredentialAttestationKind.init(rawValue: attestation)
             }
             
+            // Check if the webapp requires user verification (see https://docs.hanko.io/guides/userverification)
             if let userVerification = creationRequest.publicKey.authenticatorSelection?.userVerification {
                 registrationRequest.userVerificationPreference = ASAuthorizationPublicKeyCredentialUserVerificationPreference.init(rawValue: userVerification)
             }
             
-            // Only ASAuthorizationPlatformPublicKeyCredentialRegistrationRequests or
-            // ASAuthorizationSecurityKeyPublicKeyCredentialRegistrationRequests should be used here.
             let authController = ASAuthorizationController(authorizationRequests: [ registrationRequest ] )
             authController.delegate = self
             authController.presentationContextProvider = self
@@ -78,36 +72,18 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
         switch authorization.credential {
         case let credentialRegistration as ASAuthorizationPlatformPublicKeyCredentialRegistration:
             logger.log("A new credential was registered: \(credentialRegistration)")
-            // Verify the attestationObject and clientDataJSON with your service.
-            // The attestationObject contains the user's new public key, which should be stored and used for subsequent sign ins.
-            // let attestationObject = credentialRegistration.rawAttestationObject
-            // let clientDataJSON = credentialRegistration.rawClientDataJSON
 
-            // TODO:
-            // After the server has verified the registration and created the user account, sign the user in with the new account.
+            // After the webapp has verified the registration and created the user account, sign the user in with the new account.
             sendRegistrationResponse(params: credentialRegistration) {
                 self.didFinishSignIn()
             }
         case let credentialAssertion as ASAuthorizationPlatformPublicKeyCredentialAssertion:
             logger.log("A credential was used to authenticate: \(credentialAssertion)")
-            // Verify the below signature and clientDataJSON with your service for the given userID.
-            // let signature = credentialAssertion.signature
-            // let clientDataJSON = credentialAssertion.rawClientDataJSON
-            // let userID = credentialAssertion.userID
 
-            // TODO:
             // After the server has verified the assertion, sign the user in.
             sendAuthenticationResponse(params: credentialAssertion) {
                 self.didFinishSignIn()
             }
-        case let passwordCredential as ASPasswordCredential:
-            logger.log("A passwordCredential was provided: \(passwordCredential)")
-            // Verify the userName and password with your service.
-            // let userName = passwordCredential.user
-            // let password = passwordCredential.password
-
-            // After the server has verified the userName and password, sign the user in.
-            didFinishSignIn()
         default:
             fatalError("Received unknown authorization type.")
         }
@@ -139,6 +115,8 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
         NotificationCenter.default.post(name: .UserSignedIn, object: nil)
     }
     
+    // Initialize a user account and credential registration
+    // see https://github.com/teamhanko/apple-wwdc21-webauthn-example/blob/master/main.go
     func getRegistrationOptions(username: String, completionHandler: @escaping (CredentialCreation) -> Void) {
         AF.request("https://\(domain)/registration_initialize?user_name=\(username)", method: .get).responseDecodable(of: CredentialCreation.self) { response in
             if let value = response.value {
@@ -148,7 +126,9 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
             }
         }
     }
-    
+
+    // Finalize the user account and credential registration
+    // see https://github.com/teamhanko/apple-wwdc21-webauthn-example/blob/master/main.go
     func sendRegistrationResponse(params: ASAuthorizationPlatformPublicKeyCredentialRegistration, completionHandler: @escaping () -> Void) {
         let response = [
             "attestationObject": params.rawAttestationObject!.toBase64Url(),
@@ -161,7 +141,6 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
             "response": response
         ]
         AF.request("https://\(domain)/registration_finalize", method: .post, parameters: parameters, encoding: JSONEncoding.default).response { response in
-            // TODO: check you have a cookie or redirected to content
             if (response.response?.statusCode == 200) {
                 completionHandler()
             } else {
@@ -169,7 +148,9 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
             }
         }
     }
-    
+
+    // Initialize user authentication
+    // see https://github.com/teamhanko/apple-wwdc21-webauthn-example/blob/master/main.go
     func getAuthenticationOptions(completionHandler: @escaping (CredentialAssertion) -> Void) {
         AF.request("https://\(domain)/authentication_initialize", method: .get).responseDecodable(of: CredentialAssertion.self) { response in
             if let value = response.value {
@@ -179,7 +160,9 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
             }
         }
     }
-    
+
+    // Finalize user authentication
+    // see https://github.com/teamhanko/apple-wwdc21-webauthn-example/blob/master/main.go
     func sendAuthenticationResponse(params: ASAuthorizationPlatformPublicKeyCredentialAssertion, completionHandler: @escaping () -> Void) {
         let response = [
             "authenticatorData": params.rawAuthenticatorData.toBase64Url(),
@@ -194,7 +177,6 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
             "response": response
         ]
         AF.request("https://\(domain)/authentication_finalize", method: .post, parameters: parameters, encoding: JSONEncoding.default).response { response in
-            // TODO: check you have a cookie or redirected to content
             if (response.response?.statusCode == 200) {
                 completionHandler()
             } else {

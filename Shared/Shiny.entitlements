@@ -4,7 +4,7 @@
 <dict>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>webcredentials:wwdc21.dev.hanko.io</string>
+		<string>webcredentials:yourdomain.here?mode=developer</string>
 	</array>
 </dict>
 </plist>
