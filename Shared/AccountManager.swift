@@ -135,8 +135,8 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
             "clientDataJSON": params.rawClientDataJSON.toBase64Url()
         ]
         let parameters: Parameters = [
-            "id": "",
-            "rawId": "",
+            "id": params.credentialID.toBase64Url(),
+            "rawId": params.credentialID.toBase64Url(),
             "type": "public-key",
             "response": response
         ]
@@ -171,8 +171,8 @@ class AccountManager: NSObject, ASAuthorizationControllerPresentationContextProv
             "userHandle": params.userID.toBase64Url()
         ]
         let parameters: Parameters = [
-            "id": "",
-            "rawId": "",
+            "id": params.credentialID.toBase64Url(),
+            "rawId": params.credentialID.toBase64Url(),
             "type": "public-key",
             "response": response
         ]
